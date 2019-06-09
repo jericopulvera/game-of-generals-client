@@ -66,11 +66,9 @@ class Navbar extends Component {
           <Link href="/">
             <a className=" mt-4  no-underline mx-4">HOME</a>
           </Link>
-          {isAuthenticated && (
-            <Link href="/matches">
-              <a className="mt-4 no-underline mx-4">MATCHES</a>
-            </Link>
-          )}
+          <Link href="/matches">
+            <a className="mt-4 no-underline mx-4">MY MATCHES</a>
+          </Link>
           {!isAuthenticated ? (
             <a
               className=" mt-4  no-underline mx-4 cursor-pointer"
@@ -95,6 +93,9 @@ class Navbar extends Component {
             </a>
           )}
         </ul>
+        {this.props.user && (
+          <div className="absolute mt-12">email: {this.props.user.email}</div>
+        )}
       </nav>
     );
   }

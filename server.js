@@ -11,9 +11,21 @@ app
   .then(() => {
     const server = express();
 
-    server.get('/bookings/:_id', (req, res) => {
-      const actualPage = '/bookings/_id';
-      const queryParams = { _id: req.params._id };
+    server.get('/matches', (req, res) => {
+      const actualPage = '/matches/index';
+      const queryParams = {};
+      app.render(req, res, actualPage, queryParams);
+    });
+
+    server.get('/matches/create', (req, res) => {
+      const actualPage = '/matches/create';
+      const queryParams = {};
+      app.render(req, res, actualPage, queryParams);
+    });
+
+    server.get('/matches/:matchId', (req, res) => {
+      const actualPage = '/matches/_matchId';
+      const queryParams = { matchId: req.params.matchId };
       app.render(req, res, actualPage, queryParams);
     });
 

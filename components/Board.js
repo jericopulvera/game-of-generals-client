@@ -23,16 +23,26 @@ const Board = props => {
   const { match: matchData, user: authenticatedUser } = props;
   const { token } = parseCookies(props);
   const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-  const rows = [8, 7, 6, 5, 4, 3, 2, 1];
+  const defaultRows = [8, 7, 6, 5, 4, 3, 2, 1];
+
+  const [rows, setRows] = useState(defaultRows);
 
   const [match, setMatch] = useState(matchData);
-  const playerPiecesColor =
-    matchData.white.user === authenticatedUser._id ? 'white' : 'black';
+  const [playerPiecesColor, setPlayerPiecesColor] = useState(null);
+
   const [whoseTurn, setWhoseTurn] = useState(calculateWhoseTurn(match));
   const [selectedPiece, setSelectedPiece] = useState(null);
   const [possibleMoves, setPossibleMoves] = useState([]);
 
   useEffect(() => {
+    if (authenticatedUser) {
+      const authenticatedUserColor =
+        match.white.user === authenticatedUser._id ? 'white' : 'black';
+      setPlayerPiecesColor(authenticatedUserColor);
+      if (authenticatedUserColor === 'black') {
+        setRows(rows.reverse());
+      }
+    }
     const socket = io(process.env.API_URL, {
       transports: ['websocket'],
       query: {
@@ -41,8 +51,17 @@ const Board = props => {
     });
 
     socket.on('player-move', data => {
-      setWhoseTurn(calculateWhoseTurn(data));
-      setMatch(data);
+      if (data._id === match._id) {
+        setWhoseTurn(calculateWhoseTurn(data));
+        setMatch(data);
+      }
+    });
+
+    socket.on('player-joined', data => {
+      if (data._id === match._id) {
+        setWhoseTurn(calculateWhoseTurn(data));
+        setMatch(data);
+      }
     });
 
     socket.on('connect', () => {
@@ -52,7 +71,7 @@ const Board = props => {
     socket.on('disconnect', () => {
       console.log('disconnected booking');
     });
-  }, [authenticatedUser, token]);
+  }, [authenticatedUser, match._id, match.white.user, rows, token]);
 
   const findPiece = (column, row, color = null) => {
     if (color === 'white' || color === null) {

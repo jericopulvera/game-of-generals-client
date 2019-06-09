@@ -57,17 +57,24 @@ const Page = props => {
   };
 
   const renderMatch = match => (
-    <a className="border p-4 flex flex-col">
-      <span>ID: {match._id}</span>
-      <span>Created By: {match.createdBy.email} </span>
-      <span>
-        Player 1: {match.white.user ? match.white.user.email : 'No Player'}
-      </span>
-      <span>
-        Player 2: {match.black.user ? match.black.user.email : 'No Player'}
-      </span>
-      <span>Created At: {dayjs(match.createdAt).fromNow()} </span>
-    </a>
+    <Link
+      href={`/match/_matchId?matchId=${match._id}`}
+      as={`/matches/${match._id}`}
+      prefetch
+      passHref
+    >
+      <a className="border p-4 flex flex-col">
+        <span>ID: {match._id}</span>
+        <span>Created By: {match.createdBy.email} </span>
+        <span>
+          Player 1: {match.white.user ? match.white.user.email : 'No Player'}
+        </span>
+        <span>
+          Player 2: {match.black.user ? match.black.user.email : 'No Player'}
+        </span>
+        <span>Created At: {dayjs(match.createdAt).fromNow()} </span>
+      </a>
+    </Link>
   );
 
   const renderMatches = () => (
@@ -103,7 +110,7 @@ const Page = props => {
 Page.getInitialProps = async ctx => {
   const {
     data: { data: matches },
-  } = await axios.get(`${process.env.API_URL}/v1/matches`);
+  } = await axios.get(`${process.env.API_URL}/v1/my-matches`);
 
   return { matches };
 };
