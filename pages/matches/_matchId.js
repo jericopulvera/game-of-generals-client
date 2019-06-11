@@ -2,12 +2,15 @@ import axios from 'axios';
 import defaultLayout from '@layouts/defaultLayout';
 import { connect } from 'react-redux';
 import Board from '@components/Board';
+import Error from '../_error';
 
 const Page = props => {
   const { match } = props;
+
   if (!match) {
-    return <div>No Match</div>;
+    return <Error statusCode={props.statusCode} />;
   }
+
   return (
     <div>
       <Board match={match} {...props} />
@@ -16,14 +19,26 @@ const Page = props => {
 };
 
 Page.getInitialProps = async ctx => {
-  const {
-    data: { data: match },
-  } = await axios.get(`${process.env.API_URL}/v1/matches/${ctx.query.matchId}`);
+  console.log(`${process.env.API_URL}/v1/matches/${ctx.query.matchId}`);
 
-  if (!match) {
-    return { statusCode: 404, match };
+  try {
+    const {
+      data: { data: match },
+    } = await axios.get(
+      `${process.env.API_URL}/v1/matches/${ctx.query.matchId}`
+    );
+
+    if (!match) {
+      return { statusCode: 404, match };
+    }
+
+    return { match };
+  } catch (error) {
+    return {
+      statusCode: error.response.status,
+      message: error.response.message,
+    };
   }
-  return { match };
 };
 
 const mapStateToProps = state => state;

@@ -31,7 +31,10 @@ const Head = props => {
       <meta charSet="UTF-8" />
       <title>{title || defaultTitle}</title>
       <meta name="description" content={description || defaultDescription} />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      />
       <link rel="icon" sizes="192x192" href="/static/touch-icon.png" />
       <link rel="apple-touch-icon" href="/static/touch-icon.png" />
       <link rel="mask-icon" href="/static/favicon-mask.svg" color="#49B882" />

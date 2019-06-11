@@ -77,17 +77,6 @@ const Page = props => {
     </Link>
   );
 
-  const renderMatches = () => (
-    <div>
-      {matches.map(match => (
-        <div key={match._id} className="p-4 text-center mb-4">
-          {renderMatch(match)}
-          {renderJoinButton(match)}
-        </div>
-      ))}
-    </div>
-  );
-
   if (!authenticatedUser) {
     return (
       <div className="flex flex-col items-center">Login to view matches</div>
@@ -102,7 +91,14 @@ const Page = props => {
       >
         Create Match
       </button>
-      {renderMatches()}
+      <div>
+        {matches.map(match => (
+          <div key={match._id} className="p-4 text-center mb-4">
+            {renderMatch(match)}
+            {renderJoinButton(match)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
