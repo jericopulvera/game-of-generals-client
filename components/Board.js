@@ -1,16 +1,60 @@
 import { useState, useEffect, useReducer } from 'react';
 import { findPiece } from '@lib/utils';
+import * as matchApi from '@api/match';
 import BoardCell from './BoardCell';
 
 const matchReducer = (state, action) => {
   switch (action.type) {
     case 'UPDATE_MATCH':
-      return { ...action.payload };
-    case 'MOVE_PIECE':
-      // find piece and update piece
-      return { ...state };
+      return { ...state, ...action.payload };
+    case 'OPPONENT_JOINED': {
+      const { opponentPiecesColor, user } = action.payload;
+      const updatedState = { ...state };
+      updatedState[opponentPiecesColor] = {
+        ...state[opponentPiecesColor],
+        user,
+      };
+      return { ...updatedState };
+    }
+    case 'OPPONENT_READY': {
+      const { opponentPiecesColor, opponentData } = action.payload;
+      const updatedState = { ...state };
+      updatedState[opponentPiecesColor] = {
+        ...opponentData,
+      };
+      return { ...updatedState };
+    }
+    case 'MOVE_PIECE': {
+      const {
+        playerPiecesColor,
+        selectedPieceId,
+        targetColumn,
+        targetRow,
+      } = action.payload;
+      // If piece opponent piece exists in the same spot remove piece.
+      const movingPieceIndex = state[playerPiecesColor].pieces.findIndex(
+        ({ _id }) => _id === selectedPieceId
+      );
+
+      const updatedState = { ...state };
+      updatedState[playerPiecesColor] = {
+        user: state[playerPiecesColor].user,
+        readyAt: state[playerPiecesColor].readyAt,
+        pieces: state[playerPiecesColor].pieces.map((piece, index) => {
+          if (index === movingPieceIndex) {
+            return {
+              ...piece,
+              column: targetColumn,
+              row: targetRow,
+            };
+          }
+          return piece;
+        }),
+      };
+
+      return { ...updatedState };
+    }
     case 'END_GAME':
-      delete state.endedAt;
       return { ...state, endedAt: true };
     default:
       throw new Error('Unexpected action');
@@ -33,111 +77,64 @@ const calculateWhoseTurn = match => {
   return whiteCanMove ? 'white' : 'black';
 };
 
-const useGetSelectedPieceValidMoves = (
-  match,
-  selectedPiece,
-  columns,
-  rows,
-  playerPiecesColor,
-  setValidMoves
-) => {
-  useEffect(() => {
-    if (!selectedPiece) return;
-
-    let possibleMoves = [];
-    const columnIndex = columns.findIndex(
-      column => column === selectedPiece.column
-    );
-    const rowIndex = rows.findIndex(row => row === selectedPiece.row);
-
-    // Move up | rowIndex + 1
-    possibleMoves.push({
-      column: columns[columnIndex],
-      row: rows[rowIndex + 1],
-    });
-
-    // Move Down
-    possibleMoves.push({
-      column: columns[columnIndex],
-      row: rows[rowIndex - 1],
-    });
-
-    // Move Left
-    possibleMoves.push({
-      column: columns[columnIndex - 1],
-      row: rows[rowIndex],
-    });
-
-    // Move Right
-    possibleMoves.push({
-      column: columns[columnIndex + 1],
-      row: rows[rowIndex],
-    });
-
-    // Remove possible moves if there is allied piece in cell
-    possibleMoves = possibleMoves.filter(
-      move => !findPiece(match, move.column, move.row, playerPiecesColor)
-    );
-
-    console.log({ possibleMoves });
-
-    setValidMoves([...possibleMoves]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPiece]);
-};
-
-const useSocketIO = (socket, match, setMatch) => {
+const useSocketIO = (socket, match, setMatch, opponentPiecesColor) => {
   useEffect(() => {
     if (socket) {
-      socket.on('player-move', data => {
-        console.log(data._id === match._id, 'isMatch?');
-        if (data._id === match._id) {
-          console.log('PLAYER MOVED');
-          setMatch({ type: 'UPDATE_MATCH', payload: data });
-        }
-      });
-
       socket.on('player-joined', data => {
         if (data._id === match._id) {
-          setMatch({ type: 'UPDATE_MATCH', payload: data });
+          setMatch({
+            type: 'OPPONENT_JOINED',
+            payload: {
+              opponentPiecesColor,
+              user: data[opponentPiecesColor].user,
+            },
+          });
         }
       });
 
-      // socket.on('player-ready', data => {
-      //   if (data._id === match._id) {
-      //     setOpponentIsReady(true);
-      //   }
-      // });
+      socket.on('player-ready', data => {
+        if (data._id === match._id) {
+          setMatch({
+            type: 'OPPONENT_READY',
+            payload: {
+              opponentPiecesColor,
+              opponentData: data[opponentPiecesColor],
+            },
+          });
+        }
+      });
+
+      socket.on('player-move', data => {
+        if (data._id === match._id) {
+          setMatch({ type: 'UPDATE_MATCH', payload: data });
+        }
+      });
     }
-  });
+  }, [match._id, opponentPiecesColor, setMatch, socket]);
 };
 
 const Board = props => {
   console.log('Board Rendered!');
   const { match: matchData, user, socket } = props;
 
-  // Constants
-  const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-  const initialRows = [8, 7, 6, 5, 4, 3, 2, 1];
-  const playerPiecesColor =
-    matchData.white.user === user._id ? 'white' : 'black';
-
   const [match, setMatch] = useReducer(matchReducer, matchData);
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState(initialRows);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [rows, setRows] = useState([8, 7, 6, 5, 4, 3, 2, 1]);
   const [selectedPiece, setSelectedPiece] = useState(null);
   const [validMoves, setValidMoves] = useState([]);
   const whoseTurn = calculateWhoseTurn(match);
 
-  useSocketIO(socket, match, setMatch);
-  useGetSelectedPieceValidMoves(
-    match,
-    selectedPiece,
-    columns,
-    rows,
-    playerPiecesColor,
-    setValidMoves
-  );
+  // Constants
+  const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+  const playerPiecesColor =
+    match.white.user && match.white.user._id === user._id ? 'white' : 'black';
+  const opponentPiecesColor = playerPiecesColor !== 'white' ? 'white' : 'black';
+  const setupBoundary = playerPiecesColor === 'white' ? [1, 2, 3] : [8, 7, 6];
+  const playerIsReady = Boolean(match[playerPiecesColor].readyAt);
+  const opponentIsReady = Boolean(match[opponentPiecesColor].readyAt);
+
+  useSocketIO(socket, match, setMatch, opponentPiecesColor);
 
   useEffect(() => {
     if (playerPiecesColor === 'black') {
@@ -147,10 +144,35 @@ const Board = props => {
     setLoading(false);
   }, [match._id, playerPiecesColor]);
 
+  const submitPieces = async e => {
+    e.preventDefault();
+    setLoadingSubmit(true);
+
+    const {
+      data: { data: submitPiecesResponse },
+    } = await matchApi.submitPieces({
+      matchId: match._id,
+      playerPieces: match[playerPiecesColor].pieces,
+    });
+
+    setMatch({ type: 'UPDATE_MATCH', payload: submitPiecesResponse });
+    setLoadingSubmit(false);
+  };
+
   return (
     <div className="capitalize flex flex-col justify-center items-center text-sm font-semibold">
       {loading && (
         <div className="flex items-center justify-center">Loading...</div>
+      )}
+
+      {!loading && !playerIsReady && (
+        <button
+          onClick={submitPieces}
+          className="cursor-pointer absolute bg-gray-600 border flex hover:bg-gray-500 items-center justify-center p-4 text-white z-50"
+          style={{ top: '12.5rem' }}
+        >
+          {loadingSubmit ? 'Loading...' : 'Submit Pieces'}
+        </button>
       )}
 
       {!loading && (
@@ -161,6 +183,8 @@ const Board = props => {
                 {columns.map(column => (
                   <BoardCell
                     key={column + row}
+                    columns={columns}
+                    rows={rows}
                     column={column}
                     row={row}
                     match={match}
@@ -168,7 +192,12 @@ const Board = props => {
                     selectedPiece={selectedPiece}
                     setSelectedPiece={setSelectedPiece}
                     playerPiecesColor={playerPiecesColor}
+                    opponentPiecesColor={opponentPiecesColor}
+                    playerIsReady={playerIsReady}
                     validMoves={validMoves}
+                    setupBoundary={setupBoundary}
+                    whoseTurn={whoseTurn}
+                    setValidMoves={setValidMoves}
                   />
                 ))}
               </tr>
@@ -177,18 +206,40 @@ const Board = props => {
         </table>
       )}
 
-      <div className={`p-2 mt-2 text-${playerPiecesColor} border bg-gray-500`}>
-        <p>Playing: {playerPiecesColor}</p>
-        <p>Turn: {whoseTurn}</p>
-      </div>
-      <button
-        className="p-2 rounded m-2"
-        onClick={() => {
-          setRows([...rows.reverse()]);
-        }}
-      >
-        FLIP BOARD
-      </button>
+      {!loading && (
+        <div className="p-2 mt-2  border bg-gray-500">
+          <p>
+            {playerPiecesColor}:{' '}
+            <span className="lowercase">
+              {match[playerPiecesColor].user
+                ? match[playerPiecesColor].user.email
+                : 'N/A'}{' '}
+            </span>
+          </p>
+          <p>
+            {opponentPiecesColor}:{' '}
+            <span className="lowercase">
+              {match[opponentPiecesColor].user
+                ? match[opponentPiecesColor].user.email
+                : 'N/A'}
+            </span>
+          </p>
+          <p>Ready: {String(playerIsReady)}</p>
+          <p>Opponent Ready: {String(opponentIsReady)}</p>
+          <p>Turn: {whoseTurn}</p>
+        </div>
+      )}
+
+      {!loading && (
+        <button
+          className="p-2 rounded m-2"
+          onClick={() => {
+            setRows([...rows.reverse()]);
+          }}
+        >
+          FLIP BOARD
+        </button>
+      )}
     </div>
   );
 };

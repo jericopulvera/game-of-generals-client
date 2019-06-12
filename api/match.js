@@ -11,3 +11,10 @@ export function movePiece({ matchId, pieceId, targetColumn, targetRow }) {
     targetRow,
   });
 }
+
+export function submitPieces({ matchId, playerPieces }) {
+  return axios.patch(
+    `${process.env.API_URL}/v1/matches/${matchId}/submit-pieces`,
+    { playerPieces }
+  );
+}

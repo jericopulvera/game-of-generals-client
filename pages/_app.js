@@ -30,11 +30,11 @@ const MyApp = props => {
     });
 
     socket.on('connect', () => {
-      console.log('connected booking');
+      console.log('connected');
     });
 
     socket.on('disconnect', () => {
-      console.log('disconnected booking');
+      console.log('disconnected');
     });
 
     setSocket(socket);

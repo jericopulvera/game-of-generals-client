@@ -1,4 +1,5 @@
 import { movePiece } from '@api/match';
+import { findPiece } from '@lib/utils';
 
 const isOpponentPiece = (match, piece, opponentPiecesColor) =>
   Boolean(
@@ -9,14 +10,20 @@ const BoardPiece = props => {
   const {
     match,
     piece,
+    columns,
+    rows,
     selectedPiece,
     setSelectedPiece,
     playerPiecesColor,
+    playerIsReady,
+    opponentPiecesColor,
     setMatch,
     validMoves,
+    setupBoundary,
+    whoseTurn,
+    setValidMoves,
   } = props;
 
-  const opponentPiecesColor = playerPiecesColor !== 'white' ? 'white' : 'black';
   const pieceIsOpponent = isOpponentPiece(match, piece, opponentPiecesColor);
   const pieceColor = pieceIsOpponent
     ? `text-${opponentPiecesColor}`
@@ -33,13 +40,73 @@ const BoardPiece = props => {
     pieceBackgroundColor = 'bg-red-400';
   }
 
+  // Hide opponent piece when setting up pieces
+  if (!setupBoundary.includes(piece.row) && !playerIsReady) {
+    return <span className="absolute inset-0 bg-black" />;
+  }
+
+  const getValidMoves = selectedPiece => {
+    if (!selectedPiece || !playerIsReady) {
+      setValidMoves([]);
+      return;
+    }
+
+    let possibleMoves = [];
+    const columnIndex = columns.findIndex(
+      column => column === selectedPiece.column
+    );
+    const rowIndex = rows.findIndex(row => row === selectedPiece.row);
+
+    // Move up | rowIndex + 1
+    possibleMoves.push({
+      column: columns[columnIndex],
+      row: rows[rowIndex + 1],
+    });
+
+    // Move Down
+    possibleMoves.push({
+      column: columns[columnIndex],
+      row: rows[rowIndex - 1],
+    });
+
+    // Move Left
+    possibleMoves.push({
+      column: columns[columnIndex - 1],
+      row: rows[rowIndex],
+    });
+
+    // Move Right
+    possibleMoves.push({
+      column: columns[columnIndex + 1],
+      row: rows[rowIndex],
+    });
+
+    // Remove possible moves if there is allied piece in cell
+    possibleMoves = possibleMoves.filter(
+      move => !findPiece(match, move.column, move.row, playerPiecesColor)
+    );
+
+    setValidMoves([...possibleMoves]);
+  };
+
   return (
     <span
       className={`absolute inset-0 ${pieceColor} ${pieceBackgroundColor}`}
       onClick={() => {
+        // Prevent selecting piece when not in turn
+        if (playerIsReady && whoseTurn !== playerPiecesColor) {
+          return;
+        }
+
         const isValidMove = validMoves.find(
           move => move.column === piece.column && move.row === piece.row
         );
+
+        // Prevent selecting opponent piece
+        if (!isValidMove && pieceIsOpponent) {
+          return;
+        }
+
         if (selectedPiece && isValidMove && pieceIsOpponent) {
           movePiece({
             matchId: match._id,
@@ -49,6 +116,8 @@ const BoardPiece = props => {
           })
             .then(response => {
               setMatch({ type: 'UPDATE_MATCH', payload: response.data.data });
+              setSelectedPiece(null);
+              setValidMoves([]);
             })
             .catch(error => {
               console.log(error);
@@ -56,6 +125,7 @@ const BoardPiece = props => {
             });
         } else {
           setSelectedPiece(piece);
+          getValidMoves(piece);
         }
       }}
     >

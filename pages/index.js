@@ -18,7 +18,10 @@ const Page = props => {
       data: { data: match },
     } = await axios.post(`${process.env.API_URL}/v1/matches`);
 
-    Router.push(`/matches/${match._id}`);
+    Router.push(
+      `/matches/_matchId?matchId=${match._id}`,
+      `/matches/${match._id}`
+    );
   };
 
   const joinMatch = async (e, match) => {
@@ -31,7 +34,10 @@ const Page = props => {
         `${process.env.API_URL}/v1/matches/${match._id}/join-match`
       );
 
-      Router.push(`/matches/${joinResponse._id}`);
+      Router.push(
+        `/matches/_matchId?matchId=${joinResponse._id}`,
+        `/matches/${match._id}`
+      );
     } catch (error) {
       alert('Something went wrong!');
       console.log({ error });
