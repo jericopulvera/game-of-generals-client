@@ -16,11 +16,7 @@ Router.events.on('routeChangeStart', url => {
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-const MyApp = props => {
-  const { Component, pageProps, reduxStore } = props;
-  const { token } = parseCookies(props);
-  const [socket, setSocket] = useState(null);
-
+const useSocketConnect = (token, setSocket) => {
   useEffect(() => {
     const socket = io(process.env.API_URL, {
       transports: ['websocket'],
@@ -40,6 +36,14 @@ const MyApp = props => {
     setSocket(socket);
     return () => socket.close();
   }, [token]);
+};
+
+const MyApp = props => {
+  const { Component, pageProps, reduxStore } = props;
+  const { token } = parseCookies(props);
+  const [socket, setSocket] = useState(null);
+  
+  useSocketConnect(token, setSocket);
 
   return (
     <Container>
