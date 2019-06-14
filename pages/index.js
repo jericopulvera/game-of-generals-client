@@ -3,7 +3,6 @@ import defaultLayout from '@layouts/defaultLayout';
 import { connect } from 'react-redux';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import Link from 'next/link';
 import Router from 'next/router';
 
 dayjs.extend(relativeTime);

@@ -50,53 +50,55 @@ class Navbar extends Component {
     const isAuthenticated = Boolean(this.props.user);
 
     return (
-      <nav className="overflow-x-auto flex justify-center">
-        {this.state.loginModalIsVisible && (
-          <LoginModal
-            onClose={() => this.setState({ loginModalIsVisible: false })}
-          />
-        )}
+      <div>
+        <nav className="mt-4 flex justify-center">
+          {this.state.loginModalIsVisible && (
+            <LoginModal
+              onClose={() => this.setState({ loginModalIsVisible: false })}
+            />
+          )}
 
-        {this.state.signUpModalIsVisible && (
-          <SignUpModal
-            onClose={() => this.setState({ signUpModalIsVisible: false })}
-          />
-        )}
-        <ul className="flex justify-center font-semibold ">
-          <Link href="/">
-            <a className=" mt-4  no-underline mx-4">HOME</a>
-          </Link>
-          <Link href="/matches">
-            <a className="mt-4 no-underline mx-4">MY MATCHES</a>
-          </Link>
-          {!isAuthenticated ? (
-            <a
-              className=" mt-4  no-underline mx-4 cursor-pointer"
-              onClick={() => this.setState({ loginModalIsVisible: true })}
-            >
-              LOGIN
-            </a>
-          ) : (
-            <a
-              className=" mt-4  no-underline mx-4 cursor-pointer"
-              onClick={e => this.handleLogout(e)}
-            >
-              LOGOUT
-            </a>
+          {this.state.signUpModalIsVisible && (
+            <SignUpModal
+              onClose={() => this.setState({ signUpModalIsVisible: false })}
+            />
           )}
-          {!isAuthenticated && (
-            <a
-              className=" mt-4  no-underline mx-4 cursor-pointer"
-              onClick={() => this.setState({ signUpModalIsVisible: true })}
-            >
-              SIGN UP
-            </a>
+          <ul className="overflow-x-auto flex items-center sm:justify-center font-semibold mx-2">
+            <Link href="/">
+              <a className="flex-shrink-0 no-underline px-4">HOME</a>
+            </Link>
+            <Link href="/matches">
+              <a className="flex-shrink-0 no-underline px-4">MY MATCHES</a>
+            </Link>
+            {!isAuthenticated ? (
+              <a
+                className="flex-shrink-0 no-underline px-4 cursor-pointer"
+                onClick={() => this.setState({ loginModalIsVisible: true })}
+              >
+                LOGIN
+              </a>
+            ) : (
+              <a
+                className="flex-shrink-0 no-underline px-4 cursor-pointer"
+                onClick={e => this.handleLogout(e)}
+              >
+                LOGOUT
+              </a>
+            )}
+            {!isAuthenticated && (
+              <a
+                className="flex-shrink-0 no-underline px-4 cursor-pointer"
+                onClick={() => this.setState({ signUpModalIsVisible: true })}
+              >
+                SIGN UP
+              </a>
+            )}
+          </ul>
+          {this.props.user && (
+            <div className="absolute mt-12">email: {this.props.user.email}</div>
           )}
-        </ul>
-        {this.props.user && (
-          <div className="absolute mt-12">email: {this.props.user.email}</div>
-        )}
-      </nav>
+        </nav>
+      </div>
     );
   }
 }
