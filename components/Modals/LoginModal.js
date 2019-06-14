@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { setUser } from '@store/actions/userActions';
 import * as authApi from '@api/auth';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import GoogleLogin from 'react-google-login';
+// import GoogleLogin from 'react-google-login';
 import Router from 'next/router';
 
 const mapDispatchToProps = { setUser };
@@ -88,26 +88,26 @@ const LoginModal = props => {
       });
   };
 
-  const responseGoogle = response => {
-    authApi
-      .loginWithGoogle(response.tokenId)
-      .then(() =>
-        authApi
-          .fetchUser()
-          .then(response => {
-            setUser(response.data.data);
-            props.onClose();
-          })
-          .catch(fetchUserError => {
-            alert('Something went wrong!');
-            console.log({ fetchUserError });
-          })
-      )
-      .catch(loginUserError => {
-        alert('Something went wrong. Please reload the page.');
-        console.log({ loginUserError });
-      });
-  };
+  // const responseGoogle = response => {
+  //   authApi
+  //     .loginWithGoogle(response.tokenId)
+  //     .then(() =>
+  //       authApi
+  //         .fetchUser()
+  //         .then(response => {
+  //           setUser(response.data.data);
+  //           props.onClose();
+  //         })
+  //         .catch(fetchUserError => {
+  //           alert('Something went wrong!');
+  //           console.log({ fetchUserError });
+  //         })
+  //     )
+  //     .catch(loginUserError => {
+  //       alert('Something went wrong. Please reload the page.');
+  //       console.log({ loginUserError });
+  //     });
+  // };
 
   return (
     <div className="fixed h-screen w-full flex items-center justify-center">
@@ -187,7 +187,7 @@ const LoginModal = props => {
             )}
           />
         </div>
-        <div className="flex items-center justify-between my-2">
+        {/* <div className="flex items-center justify-between my-2">
           <GoogleLogin
             clientId={process.env.GOOGLE_CLIENT_ID}
             render={renderProps => (
@@ -205,7 +205,7 @@ const LoginModal = props => {
             onFailure={responseGoogle}
             // cookiePolicy={'single_host_origin'}
           />
-        </div>
+        </div> */}
       </form>
     </div>
   );
