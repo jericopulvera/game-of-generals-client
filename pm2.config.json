@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "golfsystem",
+      "name": "strength-in-number",
       "script": "npm",
       "args": "run start",
       "instances": 1,

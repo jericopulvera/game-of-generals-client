@@ -2,7 +2,7 @@ import React from 'react';
 import NextHead from 'next/head';
 import { string } from 'prop-types';
 
-const defaultTitle = 'Game of Generals';
+const defaultTitle = 'Strength In Number';
 const defaultDescription = '';
 const defaultOGURL = '';
 const defaultOGImage = '';
