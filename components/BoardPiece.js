@@ -93,19 +93,18 @@ const BoardPiece = props => {
     <span
       className={`absolute inset-0 ${pieceColor} ${pieceBackgroundColor}`}
       onClick={() => {
+        // Prevent movement if game ended
+        if (match.winner) return;
+
         // Prevent selecting piece when not in turn
-        if (playerIsReady && whoseTurn !== playerPiecesColor) {
-          return;
-        }
+        if (playerIsReady && whoseTurn !== playerPiecesColor) return;
 
         const isValidMove = validMoves.find(
           move => move.column === piece.column && move.row === piece.row
         );
 
         // Prevent selecting opponent piece
-        if (!isValidMove && pieceIsOpponent) {
-          return;
-        }
+        if (!isValidMove && pieceIsOpponent) return;
 
         if (selectedPiece && isValidMove && pieceIsOpponent) {
           movePiece({

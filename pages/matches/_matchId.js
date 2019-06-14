@@ -19,8 +19,6 @@ const Page = props => {
 };
 
 Page.getInitialProps = async ctx => {
-  console.log(`${process.env.API_URL}/v1/matches/${ctx.query.matchId}`);
-
   try {
     const {
       data: { data: match },

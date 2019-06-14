@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer } from 'react';
-import { findPiece } from '@lib/utils';
+import Link from 'next/link';
 import * as matchApi from '@api/match';
 import BoardCell from './BoardCell';
 
@@ -113,9 +113,10 @@ const useSocketIO = (socket, match, setMatch, opponentPiecesColor) => {
   }, [match._id, opponentPiecesColor, setMatch, socket]);
 };
 
+const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
 const Board = props => {
   console.log('Board Rendered!');
-  const { match: matchData, user, socket } = props;
+  const { match: matchData, user: authenticatedUser, socket } = props;
 
   const [match, setMatch] = useReducer(matchReducer, matchData);
   const [loading, setLoading] = useState(true);
@@ -126,9 +127,13 @@ const Board = props => {
   const whoseTurn = calculateWhoseTurn(match);
 
   // Constants
-  const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
   const playerPiecesColor =
-    match.white.user && match.white.user._id === user._id ? 'white' : 'black';
+    match.white.user &&
+    authenticatedUser &&
+    match.white.user._id === authenticatedUser._id
+      ? 'white'
+      : 'black';
+
   const opponentPiecesColor = playerPiecesColor !== 'white' ? 'white' : 'black';
   const setupBoundary = playerPiecesColor === 'white' ? [1, 2, 3] : [8, 7, 6];
   const playerIsReady = Boolean(match[playerPiecesColor].readyAt);
@@ -161,10 +166,28 @@ const Board = props => {
 
   return (
     <div className="capitalize flex flex-col justify-center items-center text-sm font-semibold">
+      {/* LOADING INDICATOR */}
       {loading && (
         <div className="flex items-center justify-center">Loading...</div>
       )}
 
+      {/* GAME ENDED */}
+      {!loading && match.winner && (
+        <div
+          onClick={submitPieces}
+          className="absolute bg-white border flex items-center justify-center p-4 text-white z-50 border-black"
+          style={{ top: '12.5rem' }}
+        >
+          <span className="capitalize flex flex-col text-center text-gray-800">
+            {match.white.user === match.winner._id ? 'White' : 'Black'} Wins
+            <Link href="/">
+              <a className="cursor-pointer underline">Navigate To Home</a>
+            </Link>
+          </span>
+        </div>
+      )}
+
+      {/* SUBMIT PIECES BUTTON */}
       {!loading && !playerIsReady && (
         <button
           onClick={submitPieces}
@@ -175,6 +198,7 @@ const Board = props => {
         </button>
       )}
 
+      {/* BOARD TABLE */}
       {!loading && (
         <table>
           <tbody>
@@ -206,6 +230,7 @@ const Board = props => {
         </table>
       )}
 
+      {/* MATCH DETAILS */}
       {!loading && (
         <div className="p-2 mt-2  border bg-gray-500">
           <p>
@@ -230,6 +255,7 @@ const Board = props => {
         </div>
       )}
 
+      {/* ACTIONS */}
       {!loading && (
         <button
           className="p-2 rounded m-2"

@@ -35,14 +35,14 @@ const useSocketConnect = (token, setSocket) => {
 
     setSocket(socket);
     return () => socket.close();
-  }, [token]);
+  }, [token, setSocket]);
 };
 
 const MyApp = props => {
   const { Component, pageProps, reduxStore } = props;
   const { token } = parseCookies(props);
   const [socket, setSocket] = useState(null);
-  
+
   useSocketConnect(token, setSocket);
 
   return (

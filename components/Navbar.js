@@ -67,9 +67,11 @@ class Navbar extends Component {
             <Link href="/">
               <a className="flex-shrink-0 no-underline px-4">HOME</a>
             </Link>
-            <Link href="/matches">
-              <a className="flex-shrink-0 no-underline px-4">MY MATCHES</a>
-            </Link>
+            {isAuthenticated && (
+              <Link href="/matches">
+                <a className="flex-shrink-0 no-underline px-4">MY MATCHES</a>
+              </Link>
+            )}
             {!isAuthenticated ? (
               <a
                 className="flex-shrink-0 no-underline px-4 cursor-pointer"
@@ -85,14 +87,14 @@ class Navbar extends Component {
                 LOGOUT
               </a>
             )}
-            {!isAuthenticated && (
+            {/* {!isAuthenticated && (
               <a
                 className="flex-shrink-0 no-underline px-4 cursor-pointer"
                 onClick={() => this.setState({ signUpModalIsVisible: true })}
               >
                 SIGN UP
               </a>
-            )}
+            )} */}
           </ul>
           {this.props.user && (
             <div className="absolute mt-12">email: {this.props.user.email}</div>
