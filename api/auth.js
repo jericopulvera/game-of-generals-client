@@ -19,7 +19,7 @@ export function loginUser(email, password) {
 
 export function loginWithFacebook(accessToken) {
   return axios
-    .post(`${apiUrl}/v1/c/login/facebook`, { accessToken })
+    .post(`${apiUrl}/v1/auth/facebook"`, { accessToken })
     .then(response => {
       const { token } = response.data.data;
       cookie.set('token', token, { expires: 1 });
