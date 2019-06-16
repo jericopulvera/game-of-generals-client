@@ -27,8 +27,10 @@ const mapStateToProps = state => state;
 
 const LoginModal = props => {
   const { setUser } = props;
-  const [email, setEmail] = useState('jerico.pulvera01z@gmail.com');
-  const [password, setPassword] = useState('123123123');
+  // const [email, setEmail] = useState('jerico.pulvera01z@gmail.com');
+  const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('123123123');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const formElement = useRef(null);
 
