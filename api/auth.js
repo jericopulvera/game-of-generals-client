@@ -55,28 +55,11 @@ export function logoutUser() {
   });
 }
 
-export function registerUser(
-  firstName,
-  lastName,
-  mobile,
-  country,
-  gender,
-  email,
-  birthday,
-  address,
-  password
-) {
-  return axios
-    .post(`${apiUrl}/v1/c/register`, {
-      firstName,
-      lastName,
-      mobile,
-      country,
-      gender,
-      email,
-      birthday,
-      address,
-      password,
-    })
-    .then(response => response.data);
+export function registerUser(name, email, password, passwordConfirmation) {
+  return axios.post(`${apiUrl}/v1/auth/register`, {
+    name,
+    email,
+    password,
+    passwordConfirmation,
+  });
 }

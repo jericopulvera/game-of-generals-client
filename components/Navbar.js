@@ -87,14 +87,14 @@ class Navbar extends Component {
                 LOGOUT
               </a>
             )}
-            {/* {!isAuthenticated && (
+            {!isAuthenticated && (
               <a
                 className="flex-shrink-0 no-underline px-4 cursor-pointer"
                 onClick={() => this.setState({ signUpModalIsVisible: true })}
               >
                 SIGN UP
               </a>
-            )} */}
+            )}
           </ul>
           {this.props.user && (
             <div className="absolute mt-12">email: {this.props.user.email}</div>
