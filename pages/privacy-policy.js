@@ -1,5 +1,5 @@
 const Page = () => {
-  return (<h1>Privacy Policy for Strength In Number</h1>
+  return (<div><h1>Privacy Policy for Strength In Number</h1>
 
     <p>At Strength In Number, accessible from https://strength-in-number.ml, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Strength In Number and how we use it.</p>
 
@@ -38,7 +38,7 @@ const Page = () => {
 
     <h2>Consent</h2>
 
-    <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>)
+    <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p></div>)
 }
 
 export default Page
