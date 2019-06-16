@@ -186,8 +186,8 @@ const LoginModal = props => {
           <div className="flex items-center justify-between my-2">
             <FacebookLogin
               appId={process.env.FACEBOOK_APP_ID}
-              scope="public_profile, email, user_birthday"
-              fields="id,email,name,gender,picture"
+              scope="public_profile, email"
+              fields="id,email,name,picture"
               callback={responseFacebook}
               render={renderProps => (
                 <button
