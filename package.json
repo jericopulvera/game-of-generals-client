@@ -5,34 +5,25 @@
     "dev:live": "API_URL=https://api.golfsystem.ml ONE_SIGNAL_APP_ID=99ad0db0-b8ef-49e7-8fd4-7e4bf66556f8 node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
-    "analyze": "BUNDLE_ANALYZE=both next build",
-    "analyze:server": "BUNDLE_ANALYZE=server next build",
-    "analyze:browser": "BUNDLE_ANALYZE=browser next build",
     "lint": "eslint .",
-    "now-build": "next build",
     "commit": "git-cz"
   },
   "dependencies": {
-    "@zeit/next-bundle-analyzer": "^0.1.2",
     "@zeit/next-css": "^1.0.1",
     "autoprefixer": "^7.1.6",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
-    "commitlint": "^7.6.1",
     "dayjs": "^1.8.14",
     "dotenv": "^8.0.0",
     "dotenv-webpack": "^1.7.0",
-    "eslint-plugin-security": "^1.4.0",
     "express": "^4.16.4",
     "js-cookie": "^2.2.0",
     "lodash.orderby": "^4.6.0",
     "moment": "^2.24.0",
-    "next": "8.0.4",
+    "next": "9.3.4",
     "next-eslint": "0.0.4",
-    "next-purgecss": "^3.0.1",
     "nookies": "^2.0.4",
     "nprogress": "^0.2.0",
-    "postcss-easy-import": "^3.0.0",
     "prop-types": "^15.7.2",
     "qrcode.react": "^0.9.3",
     "react": "16.8.6",
@@ -43,58 +34,24 @@
     "react-redux": "^7.0.1",
     "react-redux-i18n": "^1.9.3",
     "redux": "^4.0.1",
-    "redux-devtools-extension": "^2.13.8",
-    "socket.io-client": "^2.2.0",
-    "tailwindcss": "^1.0.0",
-    "webpack": "^4.32.2"
+    "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^7.2.1",
-    "@commitlint/config-conventional": "^7.1.2",
+    "@fullhuman/postcss-purgecss": "^1.3.0",
     "babel-eslint": "^9.0.0",
-    "commitizen": "^3.1.1",
-    "cssnano": "^4.1.10",
-    "cz-conventional-changelog": "^2.1.0",
     "eslint": "^5.16.0",
-    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb": "^17.1.1",
     "eslint-config-prettier": "^4.3.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-config-standard-react": "^7.0.2",
     "eslint-config-wesbos": "0.0.19",
     "eslint-plugin-html": "^5.0.5",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-react": "^7.13.0",
-    "eslint-plugin-react-hooks": "^1.6.0",
-    "eslint-plugin-standard": "^4.0.0",
-    "husky": "^1.3.1",
-    "lint-staged": "^8.1.7",
-    "prettier": "^1.17.1"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
-    }
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --fix",
-      "git add",
-      "eslint"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "postcss-preset-env": "^6.7.0",
+    "prettier": "^1.19.1",
+    "redux-devtools-extension": "^2.13.8",
+    "tailwindcss": "^1.1.4"
   }
 }

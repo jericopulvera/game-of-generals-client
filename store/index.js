@@ -3,7 +3,6 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 
 // REDUCERS
 import userReducer from './reducers/userReducer.js';
-import matchReducer from './reducers/matchReducer.js';
 
 const exampleInitialState = {
   user: null,
