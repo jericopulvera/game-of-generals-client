@@ -74,7 +74,6 @@ const Board = props => {
 
       // Socket Logic
       const socket = io(process.env.API_URL, {
-        transports: ['websocket'],
         query: {
           token,
         },

@@ -19,7 +19,6 @@ Router.events.on('routeChangeError', () => NProgress.done());
 const useSocketConnect = (token, setSocket) => {
   useEffect(() => {
     const socket = io(process.env.API_URL, {
-      transports: ['websocket'],
       query: {
         token,
       },
